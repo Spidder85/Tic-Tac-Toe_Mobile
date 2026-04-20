@@ -1,4 +1,8 @@
 package app.domain.model;
 
-public class GameStatus {
+public enum GameStatus {
+    WAITING_FOR_PLAYERS,
+    TURN,
+    DRAW,
+    WIN
 }

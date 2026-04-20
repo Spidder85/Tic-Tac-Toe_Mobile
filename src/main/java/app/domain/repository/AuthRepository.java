@@ -1,4 +1,13 @@
 package app.domain.repository;
 
-public class AuthRepository {
+import app.domain.model.User;
+
+public interface AuthRepository {
+    boolean signUp(String login, String password);
+
+    User signIn(String login, String password);
+
+    User getCurrentUser();
+
+    void logout();
 }
