@@ -12,10 +12,6 @@
         android:theme="@style/Theme.TicTacToe">
 
         <activity
-            android:name=".presentation.game.GameActivity"
-            android:exported="false" />
-
-        <activity
             android:name=".presentation.games.GamesActivity"
             android:exported="false" />
 
