@@ -14,12 +14,15 @@ import androidx.lifecycle.ViewModelProvider;
 
 import javax.inject.Inject;
 
+import app.R;
 import app.TicTacToeApplication;
 import app.databinding.ActivityCurrentGameBinding;
 import app.domain.usecase.GetCurrentUserUseCase;
 import app.domain.usecase.GetGameUseCase;
 import app.domain.usecase.MakeMoveUseCase;
 import app.presentation.auth.SignInActivity;
+
+import androidx.appcompat.widget.AppCompatImageButton;
 
 public class CurrentGameActivity extends AppCompatActivity {
     public static final String EXTRA_GAME_ID = "extra_game_id";
@@ -159,18 +162,44 @@ public class CurrentGameActivity extends AppCompatActivity {
         });
     }
 
+//    private void renderCells(CurrentGameViewData game) {
+//        String[][] cells = game.getCells();
+//
+//        binding.cell00.setText(cells[0][0]);
+//        binding.cell01.setText(cells[0][1]);
+//        binding.cell02.setText(cells[0][2]);
+//        binding.cell10.setText(cells[1][0]);
+//        binding.cell11.setText(cells[1][1]);
+//        binding.cell12.setText(cells[1][2]);
+//        binding.cell20.setText(cells[2][0]);
+//        binding.cell21.setText(cells[2][1]);
+//        binding.cell22.setText(cells[2][2]);
+//    }
+
     private void renderCells(CurrentGameViewData game) {
         String[][] cells = game.getCells();
 
-        binding.cell00.setText(cells[0][0]);
-        binding.cell01.setText(cells[0][1]);
-        binding.cell02.setText(cells[0][2]);
-        binding.cell10.setText(cells[1][0]);
-        binding.cell11.setText(cells[1][1]);
-        binding.cell12.setText(cells[1][2]);
-        binding.cell20.setText(cells[2][0]);
-        binding.cell21.setText(cells[2][1]);
-        binding.cell22.setText(cells[2][2]);
+        renderCell(binding.cell00, cells[0][0]);
+        renderCell(binding.cell01, cells[0][1]);
+        renderCell(binding.cell02, cells[0][2]);
+
+        renderCell(binding.cell10, cells[1][0]);
+        renderCell(binding.cell11, cells[1][1]);
+        renderCell(binding.cell12, cells[1][2]);
+
+        renderCell(binding.cell20, cells[2][0]);
+        renderCell(binding.cell21, cells[2][1]);
+        renderCell(binding.cell22, cells[2][2]);
+    }
+
+    private void renderCell(AppCompatImageButton button, String value) {
+        if ("X".equals(value)) {
+            button.setImageResource(R.drawable.ic_mark_x);
+        } else if ("O".equals(value)) {
+            button.setImageResource(R.drawable.ic_mark_o);
+        } else {
+            button.setImageDrawable(null);
+        }
     }
 
     private void setBoardEnabled(boolean enabled) {

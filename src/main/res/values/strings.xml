@@ -1,3 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Tic Tac Toe</string>
+    <string name="app_name">Крестики-нолики</string>
+
+    <string name="sign_in_title">Авторизация</string>
+    <string name="sign_up_title">Регистрация</string>
+    <string name="login_hint">Логин</string>
+    <string name="password_hint">Пароль</string>
+    <string name="repeat_password_hint">Повторите пароль</string>
+    <string name="show_password">Показать пароль</string>
+    <string name="sign_in">Войти</string>
+    <string name="sign_up">Зарегистрироваться</string>
+    <string name="back">Назад</string>
+
+    <string name="games_title">Существующие игры</string>
+    <string name="games_empty">Нет доступных игр</string>
+    <string name="create_game">Создать игру</string>
+    <string name="logout">Выход</string>
+
+    <string name="create_game_title">Создание игры</string>
+    <string name="create_vs_computer">Создать игру с компьютером</string>
+    <string name="create_vs_player">Создать игру с другим игроком</string>
+
+    <string name="current_game_title">Текущая игра</string>
+    <string name="game_id_label">UUID игры:</string>
+    <string name="player_one_label">Игрок 1:</string>
+    <string name="player_two_label">Игрок 2:</string>
+    <string name="game_status_label">Состояние игры:</string>
+    <string name="creator_label">Создатель:</string>
+    <string name="choose_opponent">Выберите тип соперника:</string>
 </resources>
