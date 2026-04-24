@@ -12,17 +12,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.concurrent.ExecutorService;
+import javax.inject.Inject;
 
 import app.TicTacToeApplication;
 import app.databinding.ActivitySignInBinding;
-import app.di.AppContainer;
+import app.domain.usecase.SignInUseCase;
 import app.presentation.games.GamesActivity;
 
 public class SignInActivity extends AppCompatActivity {
     private ActivitySignInBinding binding;
     private SignInViewModel viewModel;
     private UserViewData authorizedUser;
+
+    @Inject
+    SignInUseCase signInUseCase;
+
+    @Inject
+    UserViewDataMapper userViewDataMapper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -31,16 +37,14 @@ public class SignInActivity extends AppCompatActivity {
         binding = ActivitySignInBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        AppContainer appContainer = ((TicTacToeApplication) getApplication()).getAppContainer();
-        ExecutorService executorService = appContainer.getExecutorService();
+        ((TicTacToeApplication) getApplication()).getAppComponent().inject(this);
 
         viewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
             @Override
             public <T extends ViewModel> T create(Class<T> modelClass) {
                 return (T) new SignInViewModel(
-                        appContainer.getSignInUseCase(),
-                        executorService,
-                        new UserViewDataMapper()
+                        signInUseCase,
+                        userViewDataMapper
                 );
             }
         }).get(SignInViewModel.class);

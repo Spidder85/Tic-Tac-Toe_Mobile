@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "app"
-    compileSdk = 32
+    compileSdk = 33
 
     defaultConfig {
         applicationId = "app.tictactoe"
@@ -16,8 +16,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     kotlinOptions {

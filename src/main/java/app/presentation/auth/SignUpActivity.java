@@ -11,15 +11,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.concurrent.ExecutorService;
+import javax.inject.Inject;
 
 import app.TicTacToeApplication;
 import app.databinding.ActivitySignUpBinding;
-import app.di.AppContainer;
+import app.domain.usecase.SignUpUseCase;
 
 public class SignUpActivity extends AppCompatActivity {
     private ActivitySignUpBinding binding;
     private SignUpViewModel viewModel;
+
+    @Inject
+    SignUpUseCase signUpUseCase;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,16 +31,12 @@ public class SignUpActivity extends AppCompatActivity {
         binding = ActivitySignUpBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        AppContainer appContainer = ((TicTacToeApplication) getApplication()).getAppContainer();
-        ExecutorService executorService = appContainer.getExecutorService();
+        ((TicTacToeApplication) getApplication()).getAppComponent().inject(this);
 
         viewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
             @Override
             public <T extends ViewModel> T create(Class<T> modelClass) {
-                return (T) new SignUpViewModel(
-                        appContainer.getSignUpUseCase(),
-                        executorService
-                );
+                return (T) new SignUpViewModel(signUpUseCase);
             }
         }).get(SignUpViewModel.class);
 

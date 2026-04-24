@@ -4,15 +4,16 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.util.concurrent.ExecutorService;
-
-import app.domain.model.User;
 import app.domain.usecase.SignInUseCase;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class SignInViewModel extends ViewModel {
     private final SignInUseCase signInUseCase;
-    private final ExecutorService executorService;
     private final UserViewDataMapper userViewDataMapper;
+    private final CompositeDisposable disposables = new CompositeDisposable();
 
     private final MutableLiveData<AuthStateViewData> stateLiveData =
             new MutableLiveData<>(new AuthStateViewData(false, null, false));
@@ -22,11 +23,9 @@ public class SignInViewModel extends ViewModel {
 
     public SignInViewModel(
             SignInUseCase signInUseCase,
-            ExecutorService executorService,
             UserViewDataMapper userViewDataMapper
     ) {
         this.signInUseCase = signInUseCase;
-        this.executorService = executorService;
         this.userViewDataMapper = userViewDataMapper;
     }
 
@@ -41,18 +40,21 @@ public class SignInViewModel extends ViewModel {
     public void signIn(String login, String password) {
         stateLiveData.setValue(new AuthStateViewData(true, null, false));
 
-        executorService.execute(() -> {
-            try {
-                User user = signInUseCase.execute(login, password);
-                currentUserLiveData.postValue(userViewDataMapper.fromDomain(user));
-                stateLiveData.postValue(new AuthStateViewData(false, null, true));
-            } catch (Exception exception) {
-                stateLiveData.postValue(
-                        new AuthStateViewData(false, exception.getMessage(), false)
-                );
-            }
-        });
+        disposables.add(
+                Single.fromCallable(() -> signInUseCase.execute(login, password))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(user -> {
+                            currentUserLiveData.setValue(userViewDataMapper.fromDomain(user));
+                            stateLiveData.setValue(new AuthStateViewData(false, null, true));
+                        }, throwable -> {
+                            stateLiveData.setValue(
+                                    new AuthStateViewData(false, throwable.getMessage(), false)
+                            );
+                        })
+        );
     }
+
 
     public void clearError() {
         AuthStateViewData currentState = stateLiveData.getValue();
@@ -69,5 +71,10 @@ public class SignInViewModel extends ViewModel {
                         currentState.isSuccess()
                 )
         );
+    }
+
+    @Override
+    protected void onCleared() {
+        disposables.clear();
     }
 }

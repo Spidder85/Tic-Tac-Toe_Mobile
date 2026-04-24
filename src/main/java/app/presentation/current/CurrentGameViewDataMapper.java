@@ -28,7 +28,7 @@ public class CurrentGameViewDataMapper {
                 "O",
                 mapStatusText(game, currentUserId),
                 isMoveAllowed(game, currentUserId),
-                mapCalls(game)
+                mapCells(game)
         );
     }
 
@@ -40,26 +40,23 @@ public class CurrentGameViewDataMapper {
 
     private String mapStatusText(CurrentGame game, String currentUserId) {
         switch (game.getStatus()) {
-            case WAITING_FOR_PLAYERS -> {
+            case WAITING_FOR_PLAYERS:
                 return "Ожидание игроков";
-            }
-            case DRAW -> {
+            case DRAW:
                 return "Ничья";
-            }
-            case WIN -> {
-                return (currentUserId != null && currentUserId.equals(game.getCurrentTurnPlayerId()))
+            case WIN:
+                return currentUserId != null && currentUserId.equals(game.getWinnerPlayerId())
                         ? "Победа"
                         : "Поражение";
-            }
-            case TURN -> {
+            case TURN:
                 if (currentUserId != null && currentUserId.equals(game.getCurrentTurnPlayerId())) {
                     return "Ваш ход";
                 }
 
                 return "Ходит соперник " + getCurrentTurnLogin(game);
-            }
+            default:
+                return "";
         }
-        return "";
     }
 
     @NonNull
@@ -76,13 +73,13 @@ public class CurrentGameViewDataMapper {
 
         if (currentTurnLogin == null || currentTurnLogin.isBlank()) {
             currentTurnLogin = game.isComputerOpponent()
-                    ? "Комьютер"
+                    ? "Компьютер"
                     : "соперник";
         }
         return currentTurnLogin;
     }
 
-    private String[][] mapCalls(CurrentGame game) {
+    private String[][] mapCells(CurrentGame game) {
         int[][] source = game.getGameField().getCells();
         String[][] result = new String[3][3];
 

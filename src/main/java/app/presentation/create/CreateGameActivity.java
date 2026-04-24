@@ -10,17 +10,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.concurrent.ExecutorService;
+import javax.inject.Inject;
 
 import app.TicTacToeApplication;
 import app.databinding.ActivityCreateGameBinding;
-import app.di.AppContainer;
+import app.domain.usecase.CreateGameUseCase;
 import app.presentation.auth.SignInActivity;
 import app.presentation.current.CurrentGameActivity;
 
 public class CreateGameActivity extends AppCompatActivity {
     private ActivityCreateGameBinding binding;
     private CreateGameViewModel viewModel;
+
+    @Inject
+    CreateGameUseCase createGameUseCase;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,16 +32,12 @@ public class CreateGameActivity extends AppCompatActivity {
         binding = ActivityCreateGameBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        AppContainer appContainer = ((TicTacToeApplication) getApplication()).getAppContainer();
-        ExecutorService executorService = appContainer.getExecutorService();
+        ((TicTacToeApplication) getApplication()).getAppComponent().inject(this);
 
         viewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
             @Override
             public <T extends ViewModel> T create(Class<T> modelClass) {
-                return (T) new CreateGameViewModel(
-                        appContainer.getCreateGameUseCase(),
-                        executorService
-                );
+                return (T) new CreateGameViewModel(createGameUseCase);
             }
         }).get(CreateGameViewModel.class);
 

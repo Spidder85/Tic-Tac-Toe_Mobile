@@ -12,11 +12,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.concurrent.ExecutorService;
+import javax.inject.Inject;
 
 import app.TicTacToeApplication;
 import app.databinding.ActivityCurrentGameBinding;
-import app.di.AppContainer;
+import app.domain.usecase.GetCurrentUserUseCase;
+import app.domain.usecase.GetGameUseCase;
+import app.domain.usecase.MakeMoveUseCase;
 import app.presentation.auth.SignInActivity;
 
 public class CurrentGameActivity extends AppCompatActivity {
@@ -25,6 +27,18 @@ public class CurrentGameActivity extends AppCompatActivity {
     private ActivityCurrentGameBinding binding;
     private CurrentGameViewModel viewModel;
     private String gameId;
+
+    @Inject
+    GetGameUseCase getGameUseCase;
+
+    @Inject
+    MakeMoveUseCase makeMoveUseCase;
+
+    @Inject
+    GetCurrentUserUseCase getCurrentUserUseCase;
+
+    @Inject
+    CurrentGameViewDataMapper mapper;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable pollRunnable = new Runnable() {
@@ -50,18 +64,16 @@ public class CurrentGameActivity extends AppCompatActivity {
             return;
         }
 
-        AppContainer appContainer = ((TicTacToeApplication) getApplication()).getAppContainer();
-        ExecutorService executorService = appContainer.getExecutorService();
+        ((TicTacToeApplication) getApplication()).getAppComponent().inject(this);
 
         viewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
             @Override
             public <T extends ViewModel> T create(Class<T> modelClass) {
                 return (T) new CurrentGameViewModel(
-                        appContainer.getGetGameUseCase(),
-                        appContainer.getMakeMoveUseCase(),
-                        appContainer.getGetCurrentUserUseCase(),
-                        executorService,
-                        new CurrentGameViewDataMapper()
+                        getGameUseCase,
+                        makeMoveUseCase,
+                        getCurrentUserUseCase,
+                        mapper
                 );
             }
         }).get(CurrentGameViewModel.class);
@@ -147,10 +159,9 @@ public class CurrentGameActivity extends AppCompatActivity {
         });
     }
 
-
     private void renderCells(CurrentGameViewData game) {
         String[][] cells = game.getCells();
-        
+
         binding.cell00.setText(cells[0][0]);
         binding.cell01.setText(cells[0][1]);
         binding.cell02.setText(cells[0][2]);
@@ -172,6 +183,5 @@ public class CurrentGameActivity extends AppCompatActivity {
         binding.cell20.setEnabled(enabled);
         binding.cell21.setEnabled(enabled);
         binding.cell22.setEnabled(enabled);
-
     }
 }

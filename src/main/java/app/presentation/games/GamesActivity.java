@@ -10,11 +10,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.concurrent.ExecutorService;
+import javax.inject.Inject;
 
 import app.TicTacToeApplication;
 import app.databinding.ActivityGamesBinding;
-import app.di.AppContainer;
+import app.domain.usecase.GetAvailableGamesUseCase;
+import app.domain.usecase.JoinGameUseCase;
+import app.domain.usecase.LogoutUseCase;
 import app.presentation.auth.SignInActivity;
 import app.presentation.create.CreateGameActivity;
 import app.presentation.current.CurrentGameActivity;
@@ -24,6 +26,18 @@ public class GamesActivity extends AppCompatActivity {
     private GamesViewModel viewModel;
     private GamesAdapter adapter;
 
+    @Inject
+    GetAvailableGamesUseCase getAvailableGamesUseCase;
+
+    @Inject
+    JoinGameUseCase joinGameUseCase;
+
+    @Inject
+    LogoutUseCase logoutUseCase;
+
+    @Inject
+    GameListItemViewDataMapper mapper;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,18 +45,16 @@ public class GamesActivity extends AppCompatActivity {
         binding = ActivityGamesBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        AppContainer appContainer = ((TicTacToeApplication) getApplication()).getAppContainer();
-        ExecutorService executorService = appContainer.getExecutorService();
+        ((TicTacToeApplication) getApplication()).getAppComponent().inject(this);
 
         viewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
             @Override
             public <T extends ViewModel> T create(Class<T> modelClass) {
                 return (T) new GamesViewModel(
-                        appContainer.getGetAvailableGamesUseCase(),
-                        appContainer.getJoinGameUseCase(),
-                        appContainer.getLogoutUseCase(),
-                        executorService,
-                        new GameListItemViewDataMapper()
+                        getAvailableGamesUseCase,
+                        joinGameUseCase,
+                        logoutUseCase,
+                        mapper
                 );
             }
         }).get(GamesViewModel.class);

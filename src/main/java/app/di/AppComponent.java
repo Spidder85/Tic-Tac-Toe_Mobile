@@ -19,8 +19,12 @@ import dagger.Component;
 })
 public interface AppComponent {
     void inject(SignInActivity activity);
+
     void inject(SignUpActivity activity);
+
     void inject(GamesActivity activity);
+
     void inject(CreateGameActivity activity);
+
     void inject(CurrentGameActivity activity);
 }

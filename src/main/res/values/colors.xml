@@ -1,6 +1,16 @@
 <resources>
-    <color name="primary">#1565C0</color>
-    <color name="primary_dark">#0D47A1</color>
+    <color name="screen_bg">#F4F7FB</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="text_primary">#1F2937</color>
+    <color name="text_secondary">#4B5563</color>
+    <color name="border">#D1D5DB</color>
+
+    <color name="primary">#277E63</color>
+    <color name="primary_dark">#1F6A54</color>
+    <color name="secondary_fill">#E6EEF5</color>
+    <color name="danger">#D64545</color>
+    <color name="link">#0F766E</color>
+
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
 </resources>

@@ -1,18 +1,24 @@
 package app;
 
 import android.app.Application;
-import app.di.AppContainer;
+
+import app.di.AppComponent;
+import app.di.AppModule;
+import app.di.DaggerAppComponent;
 
 public class TicTacToeApplication extends Application {
-    private AppContainer appContainer;
+    private AppComponent appComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        appContainer = new AppContainer(this);
+
+        appComponent = DaggerAppComponent.builder()
+                .appModule(new AppModule(this))
+                .build();
     }
 
-    public AppContainer getAppContainer() {
-        return appContainer;
+    public AppComponent getAppComponent() {
+        return appComponent;
     }
 }

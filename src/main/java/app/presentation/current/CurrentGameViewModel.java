@@ -4,8 +4,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.util.concurrent.ExecutorService;
-
 import app.domain.model.CurrentGame;
 import app.domain.model.GameField;
 import app.domain.model.UnauthorizedException;
@@ -13,13 +11,17 @@ import app.domain.model.User;
 import app.domain.usecase.GetCurrentUserUseCase;
 import app.domain.usecase.GetGameUseCase;
 import app.domain.usecase.MakeMoveUseCase;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class CurrentGameViewModel extends ViewModel {
     private final GetGameUseCase getGameUseCase;
     private final MakeMoveUseCase makeMoveUseCase;
     private final GetCurrentUserUseCase getCurrentUserUseCase;
-    private final ExecutorService executorService;
     private final CurrentGameViewDataMapper mapper;
+    private final CompositeDisposable disposables = new CompositeDisposable();
 
     private final MutableLiveData<CurrentGameStateViewData> stateLiveData =
             new MutableLiveData<>(new CurrentGameStateViewData(false, null, false));
@@ -34,13 +36,11 @@ public class CurrentGameViewModel extends ViewModel {
             GetGameUseCase getGameUseCase,
             MakeMoveUseCase makeMoveUseCase,
             GetCurrentUserUseCase getCurrentUserUseCase,
-            ExecutorService executorService,
             CurrentGameViewDataMapper mapper
     ) {
         this.getGameUseCase = getGameUseCase;
         this.makeMoveUseCase = makeMoveUseCase;
         this.getCurrentUserUseCase = getCurrentUserUseCase;
-        this.executorService = executorService;
         this.mapper = mapper;
     }
 
@@ -55,47 +55,34 @@ public class CurrentGameViewModel extends ViewModel {
     public void loadGame(String gameId) {
         stateLiveData.setValue(new CurrentGameStateViewData(true, null, false));
 
-        executorService.execute(() -> {
-            try {
-                User user = getCurrentUserUseCase.execute();
-                if (user != null) {
-                    currentUserId = user.getId();
-                }
-
-                CurrentGame loadedGame = getGameUseCase.execute(gameId);
-                currentGame = loadedGame;
-
-                gameLiveData.postValue(mapper.fromDomain(loadedGame, currentUserId));
-                stateLiveData.postValue(new CurrentGameStateViewData(false, null, false));
-            } catch (UnauthorizedException exception) {
-                stateLiveData.postValue(
-                        new CurrentGameStateViewData(false, exception.getMessage(), true)
-                );
-            } catch (Exception exception) {
-                stateLiveData.postValue(
-                        new CurrentGameStateViewData(false, exception.getMessage(), false)
-                );
-            }
-        });
+        disposables.add(
+                Single.fromCallable(() -> {
+                    User user = getCurrentUserUseCase.execute();
+                    String resolvedUserId = user != null ? user.getId() : null;
+                    CurrentGame loadedGame = getGameUseCase.execute(gameId);
+                    return new LoadedGameData(resolvedUserId, loadedGame);
+                })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(data -> {
+                            currentUserId = data.currentUserId;
+                            currentGame = data.game;
+                            gameLiveData.setValue(mapper.fromDomain(data.game, currentUserId));
+                            stateLiveData.setValue(new CurrentGameStateViewData(false, null, false));
+                        }, this::handleError)
+        );
     }
 
     public void refreshGame(String gameId) {
-        executorService.execute(() -> {
-            try {
-                CurrentGame loadedGame = getGameUseCase.execute(gameId);
-                currentGame = loadedGame;
-
-                gameLiveData.postValue(mapper.fromDomain(loadedGame, currentUserId));
-            } catch (UnauthorizedException exception) {
-                stateLiveData.postValue(
-                        new CurrentGameStateViewData(false, exception.getMessage(), true)
-                );
-            } catch (Exception exception) {
-                stateLiveData.postValue(
-                        new CurrentGameStateViewData(false, exception.getMessage(), false)
-                );
-            }
-        });
+        disposables.add(
+                Single.fromCallable(() -> getGameUseCase.execute(gameId))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(loadedGame -> {
+                            currentGame = loadedGame;
+                            gameLiveData.setValue(mapper.fromDomain(loadedGame, currentUserId));
+                        }, this::handleError)
+        );
     }
 
     public void makeMove(int row, int col) {
@@ -107,23 +94,16 @@ public class CurrentGameViewModel extends ViewModel {
 
         stateLiveData.setValue(new CurrentGameStateViewData(true, null, false));
 
-        executorService.execute(() -> {
-            try {
-                CurrentGame updatedGame = makeMoveUseCase.execute(requestGame);
-                currentGame = updatedGame;
-
-                gameLiveData.postValue(mapper.fromDomain(updatedGame, currentUserId));
-                stateLiveData.postValue(new CurrentGameStateViewData(false, null, false));
-            } catch (UnauthorizedException exception) {
-                stateLiveData.postValue(
-                        new CurrentGameStateViewData(false, exception.getMessage(), true)
-                );
-            } catch (Exception exception) {
-                stateLiveData.postValue(
-                        new CurrentGameStateViewData(false, exception.getMessage(), false)
-                );
-            }
-        });
+        disposables.add(
+                Single.fromCallable(() -> makeMoveUseCase.execute(requestGame))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(updatedGame -> {
+                            currentGame = updatedGame;
+                            gameLiveData.setValue(mapper.fromDomain(updatedGame, currentUserId));
+                            stateLiveData.setValue(new CurrentGameStateViewData(false, null, false));
+                        }, this::handleError)
+        );
     }
 
     public void clearError() {
@@ -172,5 +152,33 @@ public class CurrentGameViewModel extends ViewModel {
             return 1;
         }
         return 2;
+    }
+
+    private void handleError(Throwable throwable) {
+        if (throwable instanceof UnauthorizedException) {
+            stateLiveData.setValue(
+                    new CurrentGameStateViewData(false, throwable.getMessage(), true)
+            );
+            return;
+        }
+
+        stateLiveData.setValue(
+                new CurrentGameStateViewData(false, throwable.getMessage(), false)
+        );
+    }
+
+    @Override
+    protected void onCleared() {
+        disposables.clear();
+    }
+
+    private static final class LoadedGameData {
+        private final String currentUserId;
+        private final CurrentGame game;
+
+        private LoadedGameData(String currentUserId, CurrentGame game) {
+            this.currentUserId = currentUserId;
+            this.game = game;
+        }
     }
 }
