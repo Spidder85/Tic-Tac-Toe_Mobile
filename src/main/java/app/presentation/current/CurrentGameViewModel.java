@@ -151,25 +151,24 @@ public class CurrentGameViewModel extends ViewModel {
             System.arraycopy(source[i], 0, updatedCells[i], 0, source[0].length);
         }
 
-        updatedCells[row][col] = resolveCurrentPlayerSymbol()
+        updatedCells[row][col] = resolveCurrentUserMark(game);
+
+        return new CurrentGame(
+                game.getId(),
+                new GameField(updatedCells),
+                game.getFirstPlayerId(),
+                game.getFirstPlayerLogin(),
+                game.getSecondPlayerId(),
+                game.getSecondPlayerLogin(),
+                game.getCurrentTurnPlayerId(),
+                game.getWinnerPlayerId(),
+                game.getStatus(),
+                game.isComputerOpponent()
+        );
     }
 
-    private int[][] copyCells(int[][] source) {
-        int[][] result = new int[source.length][source[0].length];
-
-        for (int row = 0; row < source.length; row++) {
-            for (int col = 0; col < source[row].length; col++) {
-                result[row][col] = source[row][col];
-            }
-        }
-
-        return result;
-    }
-
-    private int resolveCurrentPlayerSymbol() {
-        if (currentGame != null
-                && currentUserId != null
-                && currentUserId.equals(currentGame.getFirstPlayerId())) {
+    private int resolveCurrentUserMark(CurrentGame game) {
+        if (currentUserId != null && currentUserId.equals(game.getFirstPlayerId())) {
             return 1;
         }
         return 2;

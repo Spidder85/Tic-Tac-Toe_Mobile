@@ -1,6 +1,168 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Текущая игра"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/gameIdLabelTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="UUID игры:" />
+
+        <TextView
+            android:id="@+id/gameIdValueTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/firstPlayerLabelTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Игрок 1:" />
+
+        <TextView
+            android:id="@+id/firstPlayerValueTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/secondPlayerLabelTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Игрок 2:" />
+
+        <TextView
+            android:id="@+id/secondPlayerValueTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/statusLabelTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Состояние игры:" />
+
+        <TextView
+            android:id="@+id/statusValueTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold" />
+
+        <GridLayout
+            android:id="@+id/gameBoardGrid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:alignmentMode="alignMargins"
+            android:columnCount="3"
+            android:rowCount="3"
+            android:useDefaultMargins="true">
+
+            <Button
+                android:id="@+id/cell00"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:layout_columnWeight="1"
+                android:text=""
+                android:textSize="24sp" />
+
+            <Button
+                android:id="@+id/cell01"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:layout_columnWeight="1"
+                android:text=""
+                android:textSize="24sp" />
+
+            <Button
+                android:id="@+id/cell02"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:layout_columnWeight="1"
+                android:text=""
+                android:textSize="24sp" />
+
+            <Button
+                android:id="@+id/cell10"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:layout_columnWeight="1"
+                android:text=""
+                android:textSize="24sp" />
+
+            <Button
+                android:id="@+id/cell11"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:layout_columnWeight="1"
+                android:text=""
+                android:textSize="24sp" />
+
+            <Button
+                android:id="@+id/cell12"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:layout_columnWeight="1"
+                android:text=""
+                android:textSize="24sp" />
+
+            <Button
+                android:id="@+id/cell20"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:layout_columnWeight="1"
+                android:text=""
+                android:textSize="24sp" />
+
+            <Button
+                android:id="@+id/cell21"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:layout_columnWeight="1"
+                android:text=""
+                android:textSize="24sp" />
+
+            <Button
+                android:id="@+id/cell22"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:layout_columnWeight="1"
+                android:text=""
+                android:textSize="24sp" />
+        </GridLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Назад" />
+
+    </LinearLayout>
+</ScrollView>

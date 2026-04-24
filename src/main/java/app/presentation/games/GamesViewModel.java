@@ -58,15 +58,9 @@ public class GamesViewModel extends ViewModel {
                 List<GameListItemViewData> items = new ArrayList<>();
 
                 for (CurrentGame game : games) {
-                    boolean availableForJoin =
-                            !game.isComputerOpponent()
-                                    && (game.getSecondPlayerId() == null || game.getSecondPlayerId().isBlank());
-
-                    if (availableForJoin) {
-                        GameListItemViewData item = mapper.fromDomain(game);
-                        if (item != null) {
-                            items.add(item);
-                        }
+                    GameListItemViewData item = mapper.fromDomain(game);
+                    if (item != null) {
+                        items.add(item);
                     }
                 }
 

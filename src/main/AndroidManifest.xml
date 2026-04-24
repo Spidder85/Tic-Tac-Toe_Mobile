@@ -32,7 +32,11 @@
 
         <activity
             android:name=".presentation.create.CreateGameActivity"
-            android:exported="true" />
+            android:exported="false" />
+
+        <activity
+            android:name=".presentation.current.CurrentGameActivity"
+            android:exported="false" />
 
     </application>
 
