@@ -62,7 +62,11 @@ public class AuthRepositoryImpl implements AuthRepository {
             Response<String> response = api.signIn(authorization).execute();
 
             if (!response.isSuccessful()) {
-                throw  createException(response.code(), "Ошибка авторизации");
+                if (response.code() == 401) {
+                    throw new UnauthorizedException("Неверный логин или пароль");
+                }
+
+                throw createException(response.code(), "Ошибка авторизации");
             }
 
             String userId = response.body();

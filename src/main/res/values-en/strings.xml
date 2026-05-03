@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Tic-tac-toe</string>
+
     <string name="sign_up">Register</string>
     <string name="back">Back</string>
     <string name="games_empty">No games available</string>
@@ -14,7 +15,7 @@
     <string name="game_id_label">Game UUID:</string>
     <string name="player_one_label">Player 1:</string>
     <string name="player_two_label">Player 2:</string>
-    <string name="repeat_password_hint">Repeate password</string>
+    <string name="repeat_password_hint">Repeat password</string>
     <string name="show_password">Show password</string>
     <string name="sign_in">SignIn</string>
     <string name="sign_in_title">Authorization</string>
